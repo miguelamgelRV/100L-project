@@ -24,7 +24,7 @@ class Brick {
         type: DataTypes.DOUBLE,
         allowNull: false,
       },
-      buyed : {
+      buyed: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
         allowNull: false,
@@ -46,6 +46,19 @@ class Brick {
             datos: bricks,
             message: "Datos obtenidos con éxito.",
           };
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async createBrick(data) {
+    try {
+      const brick = await this.model.create(data);
+      return {
+        status: true,
+        datos: brick,
+        message: "Registrado correctamente.",
+      };
     } catch (error) {
       throw new Error(error.message);
     }

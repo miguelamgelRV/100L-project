@@ -3,7 +3,7 @@ const database = require("../config/db");
 
 class ShoppingCart {
   constructor() {
-    this.model = database.sequelize.define("bricks", {
+    this.model = database.sequelize.define("shopping-cart", {
       userId: {
         type: DataTypes.INTEGER,
         allowNull: false,

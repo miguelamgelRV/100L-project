@@ -1,7 +1,5 @@
 const { DataTypes } = require("sequelize");
 const database = require("../config/db");
-const fs = require('fs');
-const path = require("path");
 
 class Property {
   constructor() {
@@ -85,24 +83,7 @@ class Property {
     }
   }
 
-  async setDataInit() {
-    let counter = 0;
-
-    const filePath = path.join(__dirname, '../data/properties.json');
-    const jsonData = fs.readFileSync(filePath, 'utf-8');
-    const properies = JSON.parse(jsonData);
-
-    properies.forEach(element => {
-        this.createProperty(element)
-        .then(response => {
-            if(response.status){
-                counter++;
-            }
-        });
-    });
-
-    return counter;
-  }
+  
 }
 
 const propertyInterface = new Property();

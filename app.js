@@ -3,23 +3,21 @@ const bodyParser = require("body-parser");
 const routes = require("./routes/index.routes");
 const database = require("./config/db");
 const cors = require("cors");
-const Property = require("./models/property.model")
+const Init = require("./utils/init-data");
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(cors());
-app.use('/api', routes);
+app.use("/api", routes);
 
 database.connect();
 database.sync().then(async () => {
-    const count = await Property.model.count();
-
-    if(count === 0){
-        const response = await Property.setDataInit();
-
-        console.log(`Se insertaron correctamente ${response} propiedades`)
-    }
+  const response = await Init.initProperties();
+  if (response) {
+    await Init.initBricks();
+    await Init.initUser();
+  }
 });
 
 const port = 3003;

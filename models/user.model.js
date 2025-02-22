@@ -3,7 +3,7 @@ const database = require("../config/db");
 
 class User {
   constructor() {
-    this.model = database.sequelize.define("bricks", {
+    this.model = database.sequelize.define("users", {
       name: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -18,6 +18,20 @@ class User {
       },
     });
   }
+
+  async createUser(data) {
+    try {
+      const user = await this.model.create(data);
+      return {
+        status: true,
+        datos: user,
+        message: "Registrado correctamente.",
+      };
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
 }
 
 module.exports = new User();
