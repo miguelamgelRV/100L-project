@@ -19,17 +19,40 @@ class BrickController {
     }
   }
 
+  async getBricksBuyedByUser(req, res) {
+    try {
+      const brick = await Brick.getBricksBuyedByUser(req.query.user);
+      res.status(200).json(brick);
+    } catch (error) {
+      res.status(400).json({ status: false, message: error.message });
+    }
+  }
+
+  async buyBrick(req, res) {
+    try {
+      const brick = await Brick.buyBrick(req.body);
+      res.status(200).json(brick);
+    } catch (error) {
+      res.status(400).json({ status: false, message: error.message });
+    }
+  }
+
   async createBrick(req, res) {
     try {
-          const response = await Brick.createBrick(req.body);
-          if(response.status){
-            res.status(200).json(response);
-          } else {
-            res.status(500).json({ status: false, message: "Ocurrió un error. Intenta más tarde." });
-          }
-        } catch (error) {
-          res.status(400).json({ status: false, message: error.message });
-        }
+      const response = await Brick.createBrick(req.body);
+      if (response.status) {
+        res.status(200).json(response);
+      } else {
+        res
+          .status(500)
+          .json({
+            status: false,
+            message: "Ocurrió un error. Intenta más tarde.",
+          });
+      }
+    } catch (error) {
+      res.status(400).json({ status: false, message: error.message });
+    }
   }
 }
 

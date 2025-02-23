@@ -3,7 +3,6 @@ const BricksInCartConstructor = require("../utils/bricks-in-cart.constructor");
 const BricksConstructor = require("../utils/brick.constructor");
 const BrickModel = require("../models/brick.model");
 const BrickInCartModel = require("../models/brick-in-cart.model");
-const brickInCartModel = require("../models/brick-in-cart.model");
 
 class ShoppingCart {
   async createShoppingCart(data) {
@@ -130,6 +129,7 @@ class ShoppingCart {
 
     return bricksInCart.some((brick) => brick.brickId === brickId);
   }
+
 }
 
 module.exports = new ShoppingCart();

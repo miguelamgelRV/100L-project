@@ -15,6 +15,16 @@ class User {
       throw new Error(error.message);
     }
   }
+
+  async userExists(userId) {
+    try {
+      const user = await UserConstructor.findOne({ where: { id: userId } });
+      return user?.id;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
   async createUser(data) {
     try {
       const user = await UserConstructor.create(data);

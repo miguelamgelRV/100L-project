@@ -12,7 +12,9 @@ router.post('/set-property', PropertyController.addProperty);
 // bricks
 router.get('/get-bricks', BrickController.getAllBricksByProperty);
 router.get('/get-brick-details', BrickController.getBrickById);
+router.get('/get-bricks-by-user', BrickController.getBricksBuyedByUser);
 router.post('/add-brick', BrickController.createBrick);
+router.patch('/buy-brick', BrickController.buyBrick);
 
 // users
 router.get('/get-users', UserController.getUsers);
@@ -21,7 +23,7 @@ router.get('/get-users', UserController.getUsers);
 router.get('/get-shopping-cart-by-user', ShoppingCartController.getShoppingCart);
 router.post('/add-brick-in-shopping-cart', ShoppingCartController.addBrickToShoppingCart);
 router.delete('/remove-brick-in-shopping-cart', ShoppingCartController.deleteBrickToShoppingCart);
-// router.put('/buy-brick', ShoppingCartController.updateBrick());
+
 
 
 module.exports = router
