@@ -1,56 +1,57 @@
-const Property = require("../models/property.model");
-const User = require("../models/user.model");
-const Brick = require("../models/brick.model");
+const Property = require("../utils/property.constructor");
+
+const PropertyModel = require("../models/property.model");
+const UserModel = require("../models/user.model");
+const BrickModel = require("../models/brick.model");
+const ShoppingCartModel = require("../models/shopping-cart.model");
 
 const fs = require("fs");
 const path = require("path");
 
 class Init {
   async initProperties() {
-    if (await Property.model.count() === 0) {
-      let counter = 0;
-
+    const count = await Property.count();
+    if (count === 0) {
       const filePath = path.join(__dirname, "../data/properties.json");
       const jsonData = fs.readFileSync(filePath, "utf-8");
       const properies = JSON.parse(jsonData);
 
       properies.forEach((element) => {
-        Property.createProperty(element);
+        PropertyModel.createProperty(element);
       });
 
       return true;
     } else {
-        console.log(`Properties count is: ${Property.model.count()}`)
-        return false;
+      console.log(`Properties count is: ${count}`);
+      return false;
     }
   }
 
   async initUser() {
-    let counter = 0;
-
     const filePath = path.join(__dirname, "../data/users.json");
     const jsonData = fs.readFileSync(filePath, "utf-8");
     const users = JSON.parse(jsonData);
 
     users.forEach((element) => {
-      User.createUser(element).then((response) => {
+      UserModel.createUser(element).then((response) => {
         if (response.status) {
-          counter++;
+          ShoppingCartModel.createShoppingCart({
+            userId: response.datos.id,
+          });
         }
       });
     });
-
-    return counter;
   }
 
   async initBricks() {
-    const properties = await Property.getAllProperties();
-    console.log("llega");
+    const properties = await PropertyModel.getAllProperties();
+
     properties.datos.forEach((property) => {
       for (let index = 0; index <= property.availability; index++) {
-        Brick.createBrick({
+        BrickModel.createBrick({
           propertyId: property.id,
           userId: null,
+          shoppingCartId: null,
           cost: 1000,
           buyed: false,
         });

@@ -1,40 +1,9 @@
-const { DataTypes } = require("sequelize");
-const database = require("../config/db");
+const BrickConstructor = require("../utils/brick.constructor");
 
 class Brick {
-  constructor() {
-    this.model = database.sequelize.define("bricks", {
-      propertyId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-          model: "properties",
-          key: "id",
-        },
-      },
-      userId: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        references: {
-          model: "users",
-          key: "id",
-        },
-      },
-      cost: {
-        type: DataTypes.DOUBLE,
-        allowNull: false,
-      },
-      buyed: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
-        allowNull: false,
-      },
-    });
-  }
-
   async getAllBricks(id) {
     try {
-      const bricks = await this.model.findAll({
+      const bricks = await BrickConstructor.findAll({
         where: {
           propertyId: id,
         },
@@ -51,9 +20,28 @@ class Brick {
     }
   }
 
+  async getBrickById(brickId) {
+    try {
+      const brick = await BrickConstructor.findOne({
+        where: {
+          id: brickId,
+        },
+      });
+      return !brick?.id
+        ? { status: false, datos: {}, message: "Sin datos por mostrar." }
+        : {
+            status: true,
+            datos: brick,
+            message: "Datos obtenidos con éxito.",
+          };
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
   async createBrick(data) {
     try {
-      const brick = await this.model.create(data);
+      const brick = await BrickConstructor.create(data);
       return {
         status: true,
         datos: brick,
@@ -63,7 +51,30 @@ class Brick {
       throw new Error(error.message);
     }
   }
+
+  async updateIdCartInBrick(brickId, shoppingCartId) {
+    try {
+      const [rowsUpdated] = await BrickConstructor.update(
+        { shoppingCartId: shoppingCartId },
+        {
+          where: {
+            id: brickId,
+          },
+        }
+      );
+      return rowsUpdated > 0 ? {
+        status: true,
+        datos: rowsUpdated,
+        message: "Registrado correctamente.",
+      } : {
+        status: false,
+        datos: rowsUpdated,
+        message: "Ocurrió un error.",
+      };
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
 }
 
-const brickInterface = new Brick();
-module.exports = brickInterface;
+module.exports = new Brick();

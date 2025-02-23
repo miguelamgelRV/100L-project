@@ -1,63 +1,17 @@
-const { DataTypes } = require("sequelize");
-const database = require("../config/db");
+const BrickConstructor = require("../utils/brick.constructor");
+const PropertyConstructor = require("../utils/property.constructor");
 
 class Property {
-  constructor() {
-    this.model = database.sequelize.define("properties", {
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      description: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      type: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      address: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
-      number: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-      },
-      postal_code: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      city: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      state: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      latitude: {
-        type: DataTypes.FLOAT,
-        allowNull: false,
-      },
-      longitude: {
-        type: DataTypes.FLOAT,
-        allowNull: false,
-      },
-      availability: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      total_bricks: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-    });
-  }
-
   async getAllProperties() {
     try {
-      const properties = await this.model.findAll();
+      const properties = await PropertyConstructor.findAll({
+        include: [
+          {
+            model: BrickConstructor,
+            as: "bricks",
+          },
+        ],
+      });
       return properties.length === 0
         ? { status: true, datos: [], message: "Sin datos por mostrar." }
         : {
@@ -72,7 +26,7 @@ class Property {
 
   async createProperty(data) {
     try {
-      const property = await this.model.create(data);
+      const property = await PropertyConstructor.create(data);
       return {
         status: true,
         datos: property,
@@ -82,9 +36,6 @@ class Property {
       throw new Error(error.message);
     }
   }
-
-  
 }
 
-const propertyInterface = new Property();
-module.exports = propertyInterface;
+module.exports = new Property();

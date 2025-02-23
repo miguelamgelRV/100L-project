@@ -1,27 +1,23 @@
-const { DataTypes } = require("sequelize");
-const database = require("../config/db");
+const UserConstructor = require("../utils/user.constructor");
 
 class User {
-  constructor() {
-    this.model = database.sequelize.define("users", {
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      nickname: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      email: {
-        type: DataTypes.STRING,
-        unique: true,
-      },
-    });
+  async getAllUsers() {
+    try {
+      const users = await UserConstructor.findAll();
+      return users.length === 0
+        ? { status: true, datos: [], message: "Sin datos por mostrar." }
+        : {
+            status: true,
+            datos: users,
+            message: "Datos obtenidos con éxito.",
+          };
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
-
   async createUser(data) {
     try {
-      const user = await this.model.create(data);
+      const user = await UserConstructor.create(data);
       return {
         status: true,
         datos: user,
@@ -31,7 +27,6 @@ class User {
       throw new Error(error.message);
     }
   }
-
 }
 
 module.exports = new User();
