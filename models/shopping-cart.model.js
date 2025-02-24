@@ -40,23 +40,6 @@ class ShoppingCart {
             },
           },
         },
-
-        // include: [
-        //   {
-        //     model: BricksInCartConstructor,
-        //     as: "bricks-in-carts",
-        //     include: [
-        //       {
-        //         model: BricksConstructor,
-        //         as: "bricks",
-        //         attributes: ["id", "cost", "buyed"],
-        //       },
-        //     ],
-        //   },
-        // ],
-        // where: {
-        //   userId: userId,
-        // },
       });
       return shoppingCart.length === 0
         ? { status: true, datos: [], message: "Sin datos por mostrar." }
