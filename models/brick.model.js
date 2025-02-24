@@ -1,7 +1,7 @@
 const BrickConstructor = require("../utils/brick.constructor");
 const UserModel = require("../models/user.model");
-// const ShoppingCartModel = require("../models/shopping-cart.model");
 const BrickInCartModel = require("../models/brick-in-cart.model");
+const PurchaseModel = require("../models/purchase.model");
 
 class Brick {
   async getAllBricks(id) {
@@ -89,29 +89,45 @@ class Brick {
       if (await UserModel.userExists(userId)) {
         if (await this.brickExists(brickId)) {
           if (!(await this.isBrickFree(brickId))) {
-            const [rowsUpdated] = await BrickConstructor.update(
-              { buyed: true, userId: userId },
-              {
-                where: {
-                  id: brickId,
-                },
-              }
+            const termsAccepted = await PurchaseModel.findTermsAccpted(
+              userId,
+              brickId
             );
-            if (rowsUpdated > 0) {
-              const isRemovedFromCart = await BrickInCartModel.removeBuyedBrickFromUserCart(userId, brickId);
+            if (termsAccepted.id !== 0 && termsAccepted.isTersAccepted) {
+              const [rowsUpdated] = await BrickConstructor.update(
+                { buyed: true, userId: userId },
+                {
+                  where: {
+                    id: brickId,
+                  },
+                }
+              );
+              if (rowsUpdated > 0) {
+                const isRemovedFromCart =
+                  await BrickInCartModel.removeBuyedBrickFromUserCart(
+                    userId,
+                    brickId
+                  );
 
-              console.log("isRemovedFromCart",isRemovedFromCart)
-              
-              return {
-                status: true,
-                datos: rowsUpdated,
-                message: `Ladrillo comprado correctamente correctamente. ${isRemovedFromCart ? 'Se removió de carrito.' : ''}`,
-              };
+                return {
+                  status: true,
+                  datos: rowsUpdated,
+                  message: `Ladrillo comprado correctamente correctamente. ${
+                    isRemovedFromCart ? "Se removió de carrito." : ""
+                  }`,
+                };
+              } else {
+                return {
+                  status: false,
+                  datos: rowsUpdated,
+                  message: "Ocurrió un error.",
+                };
+              }
             } else {
               return {
                 status: false,
-                datos: rowsUpdated,
-                message: "Ocurrió un error.",
+                datos: 0,
+                message: "El usuario no aceptó los terminos y condiciones.",
               };
             }
           } else {
@@ -157,8 +173,6 @@ class Brick {
       throw new Error(error.message);
     }
   }
-
-  
 }
 
 module.exports = new Brick();

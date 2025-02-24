@@ -4,6 +4,7 @@ const PropertyController = require('../controllers/property.controller');
 const BrickController = require('../controllers/brick.controller');
 const UserController = require('../controllers/user.controller');
 const ShoppingCartController = require('../controllers/shopping-cart.controller');
+const PurchaseController = require('../controllers/purchase.controller');
 
 // properties
 router.get('/get-properties', PropertyController.getAllProperties);
@@ -24,6 +25,7 @@ router.get('/get-shopping-cart-by-user', ShoppingCartController.getShoppingCart)
 router.post('/add-brick-in-shopping-cart', ShoppingCartController.addBrickToShoppingCart);
 router.delete('/remove-brick-in-shopping-cart', ShoppingCartController.deleteBrickToShoppingCart);
 
-
+// purchases
+router.post('/add-purchase', PurchaseController.createPurchase);
 
 module.exports = router

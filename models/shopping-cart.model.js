@@ -1,6 +1,7 @@
 const ShoppingCartConstructor = require("../utils/shopping-cart.constructor");
 const BricksInCartConstructor = require("../utils/bricks-in-cart.constructor");
 const BricksConstructor = require("../utils/brick.constructor");
+const PropertyConstructor = require("../utils/property.constructor");
 const BrickModel = require("../models/brick.model");
 const BrickInCartModel = require("../models/brick-in-cart.model");
 
@@ -20,23 +21,42 @@ class ShoppingCart {
 
   async getShoppingCartByUser(userId) {
     try {
-      const shoppingCart = await ShoppingCartConstructor.findAll({
-        include: [
-          {
+      const shoppingCart = await PropertyConstructor.findAll({
+        include: {
+          model: BricksConstructor,
+          as: "bricks",
+          required: true,
+          include: {
             model: BricksInCartConstructor,
             as: "bricks-in-carts",
-            include: [
-              {
-                model: BricksConstructor,
-                as: "bricks",
-                attributes: ["id", "cost", "buyed"],
+            required: true,
+            include: {
+              model: ShoppingCartConstructor,
+              as: "shopping-carts",
+              required: true,
+              where: {
+                userId: userId,
               },
-            ],
+            },
           },
-        ],
-        where: {
-          userId: userId,
         },
+
+        // include: [
+        //   {
+        //     model: BricksInCartConstructor,
+        //     as: "bricks-in-carts",
+        //     include: [
+        //       {
+        //         model: BricksConstructor,
+        //         as: "bricks",
+        //         attributes: ["id", "cost", "buyed"],
+        //       },
+        //     ],
+        //   },
+        // ],
+        // where: {
+        //   userId: userId,
+        // },
       });
       return shoppingCart.length === 0
         ? { status: true, datos: [], message: "Sin datos por mostrar." }
@@ -96,26 +116,27 @@ class ShoppingCart {
         where: { id: idBrickInCart },
       });
 
-      console.log("idBrickInCart",idBrickInCart)
-
-      if(element?.id){
+      if (element?.id) {
         const transaction = BrickInCartModel.deleteBrickInCart(element.id);
 
-        return transaction ? {
-          status: true,
-          datos: 0,
-          message: "Removido correctamente.",
-        } : {
-          status: false,
-          datos: 0,
-          message: "No sé pudo eliminar el registro, intenta más tarde.",
-        }
+        return transaction
+          ? {
+              status: true,
+              datos: 0,
+              message: "Removido correctamente.",
+            }
+          : {
+              status: false,
+              datos: 0,
+              message: "No sé pudo eliminar el registro, intenta más tarde.",
+            };
       } else {
         return {
           status: false,
           datos: 0,
-          message: "No sé pudo eliminar el registro, ya que no se encontro coincidencia de ID.",
-        }
+          message:
+            "No sé pudo eliminar el registro, ya que no se encontro coincidencia de ID.",
+        };
       }
     } catch (error) {
       throw new Error(error.message);
@@ -129,7 +150,6 @@ class ShoppingCart {
 
     return bricksInCart.some((brick) => brick.brickId === brickId);
   }
-
 }
 
 module.exports = new ShoppingCart();

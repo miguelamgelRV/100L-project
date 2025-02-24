@@ -45,9 +45,6 @@ class BricksInCart {
     try {
       const brickInCartId = await this.findIdByUserBrick(userId, brickId);
 
-      console.log("userId, brickId", userId, brickId);
-      console.log("brickInCartId",brickInCartId);
-
       if(brickInCartId > 0){
         return await this.deleteBrickInCart(brickInCartId);
       }
@@ -61,8 +58,6 @@ class BricksInCart {
   async findIdByUserBrick(userId, brickId) {
     try {
       const shoppingCartId = await this.findIdByUser(userId);
-
-      console.log("findIdByUserBrick:shoppingCartId: ",shoppingCartId);
 
       if (typeof(shoppingCartId) === "number" && shoppingCartId > 0) {
         const shoppingCart = await BricksInCartConstructor.findOne({
@@ -91,7 +86,7 @@ class BricksInCart {
           userId: userId,
         },
       });
-      console.log("findIdByUser:shoppingCart: ",shoppingCart.id);
+      
       return shoppingCart?.id ? shoppingCart.id : 0;
     } catch (error) {
       throw new Error(error.message);

@@ -2,6 +2,7 @@ const { DataTypes } = require("sequelize");
 const database = require("../config/db");
 const Brick = require("../utils/brick.constructor");
 const ShoppingCart = require("../utils/shopping-cart.constructor");
+const Purchase = require("../utils/purchases.constructor");
 
 const User = database.sequelize.define("users", {
   name: {
@@ -38,5 +39,14 @@ as: "user",
 foreignKey: "userId",
 });
 
+User.hasMany(Purchase, {
+  as: "purchases",
+  foreignKey: "userId",
+});
+
+Purchase.belongsTo(User, {
+  as: "user",
+  foreignKey: "userId",
+});
 
 module.exports = User;
